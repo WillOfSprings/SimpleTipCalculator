@@ -1,8 +1,12 @@
 package ads.tipcalculator
 
 import ads.tipcalculator.databinding.ActivityMainBinding
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import java.text.NumberFormat
 import kotlin.math.ceil
@@ -18,10 +22,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.calculateButton.setOnClickListener{ calculateTip() }
+        binding.costOfServiceEditText.setOnKeyListener { view, keyCode, _ -> handleKeyEvent(view, keyCode) }
+    }
+
+    private fun handleKeyEvent(view: View, keyCode: Int): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            // Hide the keyboard
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+            return true
+        }
+        return false
     }
 
     private fun calculateTip() {
-        val cost = binding.costOfService.text.toString().toDoubleOrNull()
+        val cost = binding.costOfServiceEditText.text.toString().toDoubleOrNull()
         if (cost == null || cost == 0.0) {
             Toast.makeText(this, "Tip amount is empty or 0.", Toast.LENGTH_SHORT).show()
             displayTip(0.0)
